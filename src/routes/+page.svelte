@@ -64,6 +64,7 @@
 
 	let hasFile = $derived(Boolean(selectedFile && audioData));
 	let hasTranscript = $derived(transcriptText.trim().length > 0);
+	let formattedTranscript = $derived(transcriptBlocks.map((b) => b.text).join('\n\n'));
 	let isBusy = $derived(isDecoding || isLoadingModel || isTranscribing);
 
 	let setupCollapsed = $state(false);
@@ -225,7 +226,7 @@
 	async function copyTranscript() {
 		if (!hasTranscript || !browser) return;
 
-		await navigator.clipboard.writeText(transcriptText);
+		await navigator.clipboard.writeText(formattedTranscript);
 		copied = true;
 
 		if (copyFeedbackTimer) {
@@ -240,7 +241,7 @@
 	function downloadTranscript() {
 		if (!hasTranscript) return;
 
-		const blob = new Blob([transcriptText], { type: 'text/plain;charset=utf-8' });
+		const blob = new Blob([formattedTranscript], { type: 'text/plain;charset=utf-8' });
 		const url = URL.createObjectURL(blob);
 		const anchor = document.createElement('a');
 		anchor.href = url;
