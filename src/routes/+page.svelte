@@ -42,7 +42,10 @@
 	let dragDepth = $state(0);
 	let isDragActive = $state(false);
 
+	let webgpuChecked = $state(false);
 	let webgpuSupported = $state(false);
+	let isMobile = $state(false);
+	let mobileDismissed = $state(false);
 
 	let modelReady = $state(false);
 	let modelStatus = $state('');
@@ -69,6 +72,8 @@
 	onMount(() => {
 		if (!browser) return;
 		webgpuSupported = typeof navigator !== 'undefined' && 'gpu' in navigator;
+		isMobile = (navigator as any).userAgentData?.mobile ?? window.innerWidth < 768;
+		webgpuChecked = true;
 	});
 
 	onDestroy(() => {
@@ -362,10 +367,15 @@
 					<div class="min-w-0 flex-1">
 						<p class="truncate text-sm font-medium text-(--ink)">{selectedFile.name}</p>
 						<p class="text-xs text-(--muted)">
-							{formatBytes(selectedFile.size)} · {formatDuration(audioDuration)} · {languages.find((l) => l.code === selectedLanguage)?.label ?? selectedLanguage}
+							{formatBytes(selectedFile.size)} · {formatDuration(audioDuration)} · {languages.find(
+								(l) => l.code === selectedLanguage
+							)?.label ?? selectedLanguage}
 						</p>
 					</div>
-					<span class="shrink-0 text-xs text-(--muted) underline decoration-dotted underline-offset-2">change</span>
+					<span
+						class="shrink-0 text-xs text-(--muted) underline decoration-dotted underline-offset-2"
+						>change</span
+					>
 				</button>
 			</section>
 		{/if}
@@ -386,9 +396,31 @@
 				{/if}
 			</div>
 
-			{#if !webgpuSupported}
+			{#if webgpuChecked && isMobile && !mobileDismissed}
+				<div
+					class="mb-3 flex items-start gap-3 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800"
+				>
+					<span class="mt-0.5 shrink-0">📱</span>
+					<div class="flex-1">
+						<p>
+							This app requires downloading a large local AI model and runs best on a desktop
+							computer.
+						</p>
+						<button
+							type="button"
+							class="mt-2 cursor-pointer text-xs font-medium underline decoration-dotted underline-offset-2"
+							onclick={() => (mobileDismissed = true)}
+						>
+							Continue anyway
+						</button>
+					</div>
+				</div>
+			{/if}
+
+			{#if webgpuChecked && !webgpuSupported}
 				<div class="rounded-xl bg-(--accent-soft) px-4 py-3 text-sm text-(--accent)">
-					WebGPU is not available. Try Chrome, Edge, or Safari with WebGPU enabled.
+					Your browser doesn't support WebGPU, which is needed to run the local AI model. Try the
+					latest Chrome, Edge, or Safari on a desktop computer.
 				</div>
 			{:else if modelReady}
 				<div class="rounded-xl bg-(--green-soft) px-4 py-3 text-sm text-(--green)">
