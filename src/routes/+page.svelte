@@ -63,6 +63,9 @@
 	let hasTranscript = $derived(transcriptText.trim().length > 0);
 	let isBusy = $derived(isDecoding || isLoadingModel || isTranscribing);
 
+	let setupCollapsed = $state(false);
+	let showSetup = $derived(!setupCollapsed || (!isTranscribing && !hasTranscript));
+
 	onMount(() => {
 		if (!browser) return;
 		webgpuSupported = typeof navigator !== 'undefined' && 'gpu' in navigator;
@@ -97,6 +100,7 @@
 		audioDuration = 0;
 		waveform = [];
 		errorMessage = '';
+		setupCollapsed = false;
 		resetTranscriptState();
 	}
 
@@ -188,6 +192,7 @@
 
 		const startedAt = performance.now();
 		isTranscribing = true;
+		setupCollapsed = true;
 		transcriptionProgress = 2;
 
 		try {
@@ -331,8 +336,42 @@
 			<p class="mt-2 text-sm text-(--muted)">private audio transcription in your browser</p>
 		</header>
 
+		<!-- Collapsed summary bar -->
+		{#if !showSetup && selectedFile}
+			<section class="mb-6">
+				<button
+					type="button"
+					class="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-(--border) bg-white/70 px-4 py-3 text-left transition hover:bg-white/90"
+					onclick={() => (setupCollapsed = false)}
+				>
+					<div
+						class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--accent-soft) text-(--accent)"
+					>
+						<svg
+							viewBox="0 0 24 24"
+							class="h-4 w-4"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+						>
+							<path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round" />
+							<circle cx="6" cy="18" r="3" />
+							<circle cx="18" cy="16" r="3" />
+						</svg>
+					</div>
+					<div class="min-w-0 flex-1">
+						<p class="truncate text-sm font-medium text-(--ink)">{selectedFile.name}</p>
+						<p class="text-xs text-(--muted)">
+							{formatBytes(selectedFile.size)} · {formatDuration(audioDuration)} · {languages.find((l) => l.code === selectedLanguage)?.label ?? selectedLanguage}
+						</p>
+					</div>
+					<span class="shrink-0 text-xs text-(--muted) underline decoration-dotted underline-offset-2">change</span>
+				</button>
+			</section>
+		{/if}
+
 		<!-- Step 1: Load Model -->
-		<section class="mb-8">
+		<section class="mb-8" class:hidden={!showSetup}>
 			<div class="mb-3 flex items-center gap-2">
 				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
 					>1.</span
@@ -353,7 +392,7 @@
 				</div>
 			{:else if modelReady}
 				<div class="rounded-xl bg-(--green-soft) px-4 py-3 text-sm text-(--green)">
-					Model loaded and cached for this session.
+					Model loaded.
 				</div>
 			{:else}
 				<button
@@ -382,7 +421,7 @@
 		</section>
 
 		<!-- Step 2: Upload Audio -->
-		<section class="mb-8">
+		<section class="mb-8" class:hidden={!showSetup}>
 			<div class="mb-3 flex items-center gap-2">
 				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
 					>2.</span
@@ -469,7 +508,7 @@
 		</section>
 
 		<!-- Step 3: Language -->
-		<section class="mb-8">
+		<section class="mb-8" class:hidden={!showSetup}>
 			<div class="mb-3 flex items-center gap-2">
 				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
 					>3.</span
@@ -495,7 +534,7 @@
 		</section>
 
 		<!-- Transcribe Button -->
-		<section class="mb-10">
+		<section class="mb-10" class:hidden={!showSetup}>
 			<button
 				type="button"
 				class="w-full cursor-pointer rounded-xl bg-(--accent) px-5 py-3.5 text-base font-semibold text-white transition hover:bg-(--accent-hover) disabled:cursor-not-allowed disabled:opacity-40"
