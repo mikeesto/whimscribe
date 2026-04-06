@@ -1,15 +1,13 @@
-<svelte:options runes={false} />
-
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import {
+		type LoadUpdate,
+		type TranscriptBlock,
 		buildWaveformPeaks,
 		decodeAudioFile,
 		ensureTranscriber,
 		transcribeAudio,
-		type LoadUpdate,
-		type TranscriptBlock,
 		DEFAULT_SAMPLE_RATE
 	} from '$lib/transcriber';
 
@@ -33,36 +31,36 @@
 		{ code: 'ko', label: 'Korean' }
 	];
 
-	let fileInput: HTMLInputElement | null = null;
-	let selectedFile: File | null = null;
-	let selectedLanguage = 'en';
-	let audioUrl = '';
-	let audioData: Float32Array | null = null;
-	let audioDuration = 0;
-	let waveform: number[] = [];
-	let dragDepth = 0;
-	let isDragActive = false;
+	let fileInput: HTMLInputElement | null = $state(null);
+	let selectedFile: File | null = $state(null);
+	let selectedLanguage = $state('en');
+	let audioUrl = $state('');
+	let audioData: Float32Array | null = $state(null);
+	let audioDuration = $state(0);
+	let waveform: number[] = $state([]);
+	let dragDepth = $state(0);
+	let isDragActive = $state(false);
 
-	let webgpuSupported = false;
+	let webgpuSupported = $state(false);
 
-	let modelReady = false;
-	let modelStatus = '';
-	let modelProgress = 0;
+	let modelReady = $state(false);
+	let modelStatus = $state('');
+	let modelProgress = $state(0);
 
-	let isDecoding = false;
-	let isLoadingModel = false;
-	let isTranscribing = false;
-	let transcriptionProgress = 0;
-	let transcriptText = '';
-	let transcriptBlocks: TranscriptBlock[] = [];
-	let runSummary: RunSummary | null = null;
-	let errorMessage = '';
-	let copied = false;
-	let copyFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
+	let isDecoding = $state(false);
+	let isLoadingModel = $state(false);
+	let isTranscribing = $state(false);
+	let transcriptionProgress = $state(0);
+	let transcriptText = $state('');
+	let transcriptBlocks: TranscriptBlock[] = $state([]);
+	let runSummary: RunSummary | null = $state(null);
+	let errorMessage = $state('');
+	let copied = $state(false);
+	let copyFeedbackTimer: ReturnType<typeof setTimeout> | null = $state(null);
 
-	$: hasFile = Boolean(selectedFile && audioData);
-	$: hasTranscript = transcriptText.trim().length > 0;
-	$: isBusy = isDecoding || isLoadingModel || isTranscribing;
+	let hasFile = $derived(Boolean(selectedFile && audioData));
+	let hasTranscript = $derived(transcriptText.trim().length > 0);
+	let isBusy = $derived(isDecoding || isLoadingModel || isTranscribing);
 
 	onMount(() => {
 		if (!browser) return;
@@ -298,10 +296,7 @@
 
 <svelte:head>
 	<title>Whimscribe</title>
-	<meta
-		name="description"
-		content="Upload an audio file, transcribe it locally with Cohere and WebGPU."
-	/>
+	<meta name="description" content="Upload an audio file, transcribe it locally" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
@@ -313,36 +308,33 @@
 <div
 	class="relative min-h-screen px-4 py-8 md:px-6 md:py-12"
 	role="presentation"
-	on:dragenter={handleDragEnter}
-	on:dragover={handleDragOver}
-	on:dragleave={handleDragLeave}
-	on:drop={handleDrop}
+	ondragenter={handleDragEnter}
+	ondragover={handleDragOver}
+	ondragleave={handleDragLeave}
+	ondrop={handleDrop}
 >
 	<main class="relative mx-auto max-w-2xl">
 		<!-- Header -->
 		<header class="mb-10 text-center">
 			<h1
-				class="whimsy-text text-5xl text-[color:var(--ink)] md:text-6xl"
+				class="whimsy-text text-5xl text-(--ink) md:text-6xl"
 				style="font-family: 'Caveat', cursive; font-weight: 700;"
 			>
 				Whimscribe
 			</h1>
-			<p class="mt-2 text-sm text-[color:var(--muted)]">
-				private audio transcription in your browser
-			</p>
+			<p class="mt-2 text-sm text-(--muted)">private audio transcription in your browser</p>
 		</header>
 
 		<!-- Step 1: Load Model -->
 		<section class="mb-8">
 			<div class="mb-3 flex items-center gap-2">
-				<span
-					class="whimsy-text text-lg text-[color:var(--accent)]"
-					style="font-family: 'Caveat', cursive;">1.</span
+				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
+					>1.</span
 				>
-				<span class="text-sm font-medium text-[color:var(--ink-soft)]">Load the model</span>
+				<span class="text-sm font-medium text-(--ink-soft)">Load the model</span>
 				{#if modelReady}
 					<span
-						class="ml-auto rounded-full bg-[color:var(--green-soft)] px-2.5 py-0.5 text-xs font-medium text-[color:var(--green)]"
+						class="ml-auto rounded-full bg-(--green-soft) px-2.5 py-0.5 text-xs font-medium text-(--green)"
 					>
 						ready ✓
 					</span>
@@ -350,22 +342,18 @@
 			</div>
 
 			{#if !webgpuSupported}
-				<div
-					class="rounded-xl bg-[color:var(--accent-soft)] px-4 py-3 text-sm text-[color:var(--accent)]"
-				>
+				<div class="rounded-xl bg-(--accent-soft) px-4 py-3 text-sm text-(--accent)">
 					WebGPU is not available. Try Chrome, Edge, or Safari with WebGPU enabled.
 				</div>
 			{:else if modelReady}
-				<div
-					class="rounded-xl bg-[color:var(--green-soft)] px-4 py-3 text-sm text-[color:var(--green)]"
-				>
+				<div class="rounded-xl bg-(--green-soft) px-4 py-3 text-sm text-(--green)">
 					Model loaded and cached for this session.
 				</div>
 			{:else}
 				<button
 					type="button"
-					class="w-full rounded-xl border-2 border-dashed border-[color:var(--border)] bg-white/60 px-4 py-4 text-sm text-[color:var(--ink-soft)] transition hover:border-[color:var(--accent)] hover:bg-white/80 disabled:opacity-50"
-					on:click={preloadModel}
+					class="w-full rounded-xl border-2 border-dashed border-(--border) bg-white/60 px-4 py-4 text-sm text-(--ink-soft) transition hover:border-(--accent) hover:bg-white/80 disabled:opacity-50"
+					onclick={preloadModel}
 					disabled={isLoadingModel}
 				>
 					{#if isLoadingModel}
@@ -374,14 +362,14 @@
 							<span>{modelStatus}</span>
 							<div class="mx-auto h-1.5 max-w-xs overflow-hidden rounded-full bg-black/5">
 								<div
-									class="h-full rounded-full bg-[color:var(--accent)] transition-all duration-300"
+									class="h-full rounded-full bg-(--accent) transition-all duration-300"
 									style={`width:${modelProgress}%`}
 								></div>
 							</div>
 						</div>
 					{:else}
 						<span>Click to load model</span>
-						<span class="ml-1 text-[color:var(--muted)]">· first time downloads ~150MB</span>
+						<span class="ml-1 text-(--muted)">· first time downloads ~150MB</span>
 					{/if}
 				</button>
 			{/if}
@@ -390,16 +378,15 @@
 		<!-- Step 2: Upload Audio -->
 		<section class="mb-8">
 			<div class="mb-3 flex items-center gap-2">
-				<span
-					class="whimsy-text text-lg text-[color:var(--accent)]"
-					style="font-family: 'Caveat', cursive;">2.</span
+				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
+					>2.</span
 				>
-				<span class="text-sm font-medium text-[color:var(--ink-soft)]">Drop your audio</span>
+				<span class="text-sm font-medium text-(--ink-soft)">Drop your audio</span>
 				{#if selectedFile && audioData}
 					<button
 						type="button"
-						class="ml-auto text-xs text-[color:var(--muted)] underline decoration-dotted underline-offset-2 hover:text-[color:var(--accent)]"
-						on:click={resetAppState}
+						class="ml-auto text-xs text-(--muted) underline decoration-dotted underline-offset-2 hover:text-(--accent)"
+						onclick={resetAppState}
 					>
 						clear
 					</button>
@@ -407,10 +394,10 @@
 			</div>
 
 			{#if selectedFile && audioData}
-				<div class="fade-in rounded-xl border border-[color:var(--border)] bg-white/70 px-4 py-4">
+				<div class="fade-in rounded-xl border border-(--border) bg-white/70 px-4 py-4">
 					<div class="flex items-center gap-3">
 						<div
-							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-[color:var(--accent)]"
+							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--accent-soft) text-(--accent)"
 						>
 							<svg
 								viewBox="0 0 24 24"
@@ -425,10 +412,10 @@
 							</svg>
 						</div>
 						<div class="min-w-0 flex-1">
-							<p class="truncate text-sm font-medium text-[color:var(--ink)]">
+							<p class="truncate text-sm font-medium text-(--ink)">
 								{selectedFile.name}
 							</p>
-							<p class="text-xs text-[color:var(--muted)]">
+							<p class="text-xs text-(--muted)">
 								{formatBytes(selectedFile.size)} · {formatDuration(audioDuration)}
 							</p>
 						</div>
@@ -438,7 +425,7 @@
 						<div class="mt-3 flex h-12 items-end gap-[2px] rounded-lg bg-black/[0.02] px-2 py-2">
 							{#each waveform as bar, index (index)}
 								<div
-									class="min-h-[12%] flex-1 rounded-full bg-[color:var(--accent)]/40"
+									class="min-h-[12%] flex-1 rounded-full bg-(--accent)/40"
 									style={`height:${bar}%`}
 								></div>
 							{/each}
@@ -454,22 +441,22 @@
 					type="button"
 					class={`w-full rounded-xl border-2 border-dashed px-4 py-8 text-center transition ${
 						isDragActive
-							? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)]'
-							: 'border-[color:var(--border)] bg-white/50 hover:border-[color:var(--accent)] hover:bg-white/70'
+							? 'border-(--accent) bg-(--accent-soft)'
+							: 'border-(--border) bg-white/50 hover:border-(--accent) hover:bg-white/70'
 					}`}
-					on:click={openFilePicker}
+					onclick={openFilePicker}
 					disabled={isBusy}
 				>
 					{#if isDecoding}
-						<p class="wiggle text-sm text-[color:var(--muted)]">Analyzing audio…</p>
+						<p class="wiggle text-sm text-(--muted)">Analyzing audio…</p>
 					{:else}
 						<p
-							class="whimsy-text text-2xl text-[color:var(--ink-soft)]"
+							class="whimsy-text text-2xl text-(--ink-soft)"
 							style="font-family: 'Caveat', cursive;"
 						>
 							{isDragActive ? 'drop it right here!' : 'drop audio here…'}
 						</p>
-						<p class="mt-1 text-xs text-[color:var(--muted)]">
+						<p class="mt-1 text-xs text-(--muted)">
 							mp3, wav, m4a, or any browser-supported format
 						</p>
 					{/if}
@@ -480,11 +467,10 @@
 		<!-- Step 3: Language -->
 		<section class="mb-8">
 			<div class="mb-3 flex items-center gap-2">
-				<span
-					class="whimsy-text text-lg text-[color:var(--accent)]"
-					style="font-family: 'Caveat', cursive;">3.</span
+				<span class="whimsy-text text-lg text-(--accent)" style="font-family: 'Caveat', cursive;"
+					>3.</span
 				>
-				<span class="text-sm font-medium text-[color:var(--ink-soft)]">Pick a language</span>
+				<span class="text-sm font-medium text-(--ink-soft)">Pick a language</span>
 			</div>
 
 			<div class="flex flex-wrap gap-1.5">
@@ -493,10 +479,10 @@
 						type="button"
 						class={`rounded-full px-3 py-1.5 text-sm transition ${
 							selectedLanguage === language.code
-								? 'bg-[color:var(--accent)] text-white'
-								: 'bg-white/60 text-[color:var(--ink-soft)] hover:bg-white/90'
+								? 'bg-(--accent) text-white'
+								: 'bg-white/60 text-(--ink-soft) hover:bg-white/90'
 						}`}
-						on:click={() => (selectedLanguage = language.code)}
+						onclick={() => (selectedLanguage = language.code)}
 					>
 						{language.label}
 					</button>
@@ -508,8 +494,8 @@
 		<section class="mb-10">
 			<button
 				type="button"
-				class="w-full rounded-xl bg-[color:var(--accent)] px-5 py-3.5 text-base font-semibold text-white transition hover:bg-[color:var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
-				on:click={startTranscription}
+				class="w-full rounded-xl bg-(--accent) px-5 py-3.5 text-base font-semibold text-white transition hover:bg-(--accent-hover) disabled:cursor-not-allowed disabled:opacity-40"
+				onclick={startTranscription}
 				disabled={!hasFile || !webgpuSupported || isBusy}
 			>
 				{#if isTranscribing}
@@ -524,7 +510,7 @@
 			{#if isTranscribing}
 				<div class="mt-2 h-1 overflow-hidden rounded-full bg-black/5">
 					<div
-						class="h-full rounded-full bg-[color:var(--accent)] transition-all duration-300"
+						class="h-full rounded-full bg-(--accent) transition-all duration-300"
 						style={`width:${transcriptionProgress}%`}
 					></div>
 				</div>
@@ -534,7 +520,7 @@
 		<!-- Error -->
 		{#if errorMessage}
 			<div
-				class="fade-in mb-8 rounded-xl border border-[color:var(--accent)]/20 bg-[color:var(--accent-soft)] px-4 py-3 text-sm text-[color:var(--accent)]"
+				class="fade-in mb-8 rounded-xl border border-(--accent)/20 bg-(--accent-soft) px-4 py-3 text-sm text-(--accent)"
 			>
 				{errorMessage}
 			</div>
@@ -547,7 +533,7 @@
 
 				<div class="mb-4 flex items-center justify-between">
 					<h2
-						class="whimsy-text text-2xl text-[color:var(--ink)]"
+						class="whimsy-text text-2xl text-(--ink)"
 						style="font-family: 'Caveat', cursive; font-weight: 600;"
 					>
 						Transcript
@@ -557,15 +543,15 @@
 						<div class="flex gap-2">
 							<button
 								type="button"
-								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-[color:var(--ink-soft)] transition hover:bg-white"
-								on:click={copyTranscript}
+								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
+								onclick={copyTranscript}
 							>
 								{copied ? '✓ copied' : 'copy'}
 							</button>
 							<button
 								type="button"
-								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-[color:var(--ink-soft)] transition hover:bg-white"
-								on:click={downloadTranscript}
+								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
+								onclick={downloadTranscript}
 							>
 								download .txt
 							</button>
@@ -574,7 +560,7 @@
 				</div>
 
 				{#if runSummary}
-					<div class="mb-5 flex flex-wrap gap-3 text-xs text-[color:var(--muted)]">
+					<div class="mb-5 flex flex-wrap gap-3 text-xs text-(--muted)">
 						<span>{runSummary.wordCount} words</span>
 						<span>·</span>
 						<span>{runSummary.blockCount} {runSummary.blockCount === 1 ? 'block' : 'blocks'}</span>
@@ -586,17 +572,17 @@
 				{#if transcriptBlocks.length > 0}
 					<div class="space-y-4">
 						{#each transcriptBlocks as block (block.id)}
-							<div class="fade-in border-l-2 border-[color:var(--accent)]/20 py-1 pl-4">
-								<p class="text-[0.95rem] leading-7 text-[color:var(--ink)]">{block.text}</p>
+							<div class="fade-in border-l-2 border-(--accent)/20 py-1 pl-4">
+								<p class="text-[0.95rem] leading-7 text-(--ink)">{block.text}</p>
 							</div>
 						{/each}
 					</div>
 				{:else if isTranscribing}
 					<div class="space-y-3 py-4">
-						<div class="h-3 w-4/5 rounded-full bg-black/[0.04]"></div>
-						<div class="h-3 w-3/5 rounded-full bg-black/[0.03]"></div>
-						<div class="h-3 w-2/3 rounded-full bg-black/[0.04]"></div>
-						<p class="mt-4 text-sm text-[color:var(--muted)]">listening…</p>
+						<div class="h-3 w-4/5 rounded-full bg-black/4"></div>
+						<div class="h-3 w-3/5 rounded-full bg-black/4"></div>
+						<div class="h-3 w-2/3 rounded-full bg-black/4"></div>
+						<p class="mt-4 text-sm text-(--muted)">listening…</p>
 					</div>
 				{/if}
 			</section>
@@ -609,12 +595,9 @@
 			class="pointer-events-none fixed inset-0 z-30 flex items-center justify-center bg-[rgba(250,246,240,0.88)] backdrop-blur-sm"
 		>
 			<div
-				class="rounded-2xl border-2 border-dashed border-[color:var(--accent)] bg-white/80 px-10 py-8 text-center"
+				class="rounded-2xl border-2 border-dashed border-(--accent) bg-white/80 px-10 py-8 text-center"
 			>
-				<p
-					class="whimsy-text text-3xl text-[color:var(--ink)]"
-					style="font-family: 'Caveat', cursive;"
-				>
+				<p class="whimsy-text text-3xl text-(--ink)" style="font-family: 'Caveat', cursive;">
 					drop it like it's hot
 				</p>
 			</div>
@@ -626,6 +609,6 @@
 		type="file"
 		accept="audio/*"
 		class="hidden"
-		on:change={handleInputChange}
+		onchange={handleInputChange}
 	/>
 </div>
