@@ -1,0 +1,99 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@font-face {
+	font-family: 'Whimsy';
+	src: local('Caveat'), local('Patrick Hand'), local('Comic Neue');
+	font-display: swap;
+}
+
+:root {
+	--canvas: #faf6f0;
+	--canvas-deep: #f0e8db;
+	--panel: rgb(255 253 248 / 85%);
+	--panel-strong: rgb(255 254 250 / 95%);
+	--ink: #2d2a26;
+	--ink-soft: #5c5650;
+	--muted: #8a837a;
+	--border: rgb(45 42 38 / 10%);
+	--accent: #c75d3a;
+	--accent-hover: #b04e2e;
+	--accent-soft: rgb(199 93 58 / 10%);
+	--accent-warm: #e8a87c;
+	--green: #5a8a6a;
+	--green-soft: rgb(90 138 106 / 12%);
+	--shadow-sm: 0 2px 8px rgb(45 42 38 / 6%);
+	--shadow: 0 8px 30px rgb(45 42 38 / 8%);
+	--font-display: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+	--font-body: 'Avenir Next', 'Segoe UI', 'Helvetica Neue', sans-serif;
+	--font-whimsy: 'Whimsy', 'Caveat', 'Patrick Hand', cursive;
+	color: var(--ink);
+	font-family: var(--font-body);
+	background-color: var(--canvas);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+html {
+	background: var(--canvas);
+}
+
+body {
+	min-height: 100vh;
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--font-body);
+}
+
+::selection {
+	background: rgb(199 93 58 / 18%);
+	color: var(--ink);
+}
+
+.display-copy {
+	font-family: var(--font-display);
+	letter-spacing: -0.03em;
+}
+
+.whimsy-text {
+	font-family: var(--font-whimsy);
+}
+
+/* Doodle-style dashed border */
+.doodle-border {
+	border: 2px dashed var(--border);
+	border-radius: 1.25rem;
+}
+
+.doodle-border:hover {
+	border-color: var(--accent);
+}
+
+/* Subtle wiggle for loading states */
+@keyframes wiggle {
+	0%, 100% { transform: rotate(-1deg); }
+	50% { transform: rotate(1deg); }
+}
+
+.wiggle {
+	animation: wiggle 2s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+	from { opacity: 0; transform: translateY(8px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+	animation: fade-in 0.4s ease-out;
+}
+
+/* Decorative squiggle line */
+.squiggle {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='8' viewBox='0 0 100 8'%3E%3Cpath d='M0 4 Q 12.5 0 25 4 Q 37.5 8 50 4 Q 62.5 0 75 4 Q 87.5 8 100 4' fill='none' stroke='%23c75d3a' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E");
+	background-repeat: repeat-x;
+	background-size: 100px 8px;
+	height: 8px;
+}
