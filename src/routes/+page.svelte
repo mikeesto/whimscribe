@@ -457,7 +457,7 @@
 							{isDragActive ? 'drop it right here!' : 'drop audio here…'}
 						</p>
 						<p class="mt-1 text-xs text-(--muted)">
-							mp3, wav, m4a, or any browser-supported format
+							mp3, wav, m4a, ogg, flac, or webm
 						</p>
 					{/if}
 				</button>
