@@ -687,4 +687,22 @@
 		class="hidden"
 		onchange={handleInputChange}
 	/>
+
+	<footer class="mx-auto mt-16 mb-4 max-w-2xl text-center text-xs text-(--muted)">
+		<p>
+			by <a
+				href="https://mikeesto.com"
+				class="underline underline-offset-2 hover:text-(--ink)"
+				target="_blank"
+				rel="noopener noreferrer">@mikeesto</a
+			>
+			·
+			<a
+				href="https://github.com/mikeesto/whimscribe"
+				class="underline underline-offset-2 hover:text-(--ink)"
+				target="_blank"
+				rel="noopener noreferrer">open source</a
+			>
+		</p>
+	</footer>
 </div>
