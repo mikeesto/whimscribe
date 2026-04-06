@@ -369,7 +369,7 @@
 						</div>
 					{:else}
 						<span>Click to load model</span>
-						<span class="ml-1 text-(--muted)">· first time downloads ~150MB</span>
+						<span class="ml-1 text-(--muted)">· first time downloads ~2GB</span>
 					{/if}
 				</button>
 			{/if}
