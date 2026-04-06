@@ -10,6 +10,7 @@
 		transcribeAudio,
 		DEFAULT_SAMPLE_RATE
 	} from '$lib/transcriber';
+	import Cat from '$lib/Cat.svelte';
 
 	type RunSummary = {
 		elapsedSeconds: number;
@@ -313,6 +314,11 @@
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
 >
+	<div
+		class="pointer-events-none absolute top-32 -left-8 z-0 hidden w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:-rotate-2 lg:block xl:-left-24 2xl:-left-32"
+	>
+		<Cat />
+	</div>
 	<main class="relative mx-auto max-w-2xl">
 		<!-- Header -->
 		<header class="mb-10 text-center">
