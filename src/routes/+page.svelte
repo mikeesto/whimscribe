@@ -352,7 +352,7 @@
 			{:else}
 				<button
 					type="button"
-					class="w-full rounded-xl border-2 border-dashed border-(--border) bg-white/60 px-4 py-4 text-sm text-(--ink-soft) transition hover:border-(--accent) hover:bg-white/80 disabled:opacity-50"
+					class="w-full cursor-pointer rounded-xl border-2 border-dashed border-(--border) bg-white/60 px-4 py-4 text-sm text-(--ink-soft) transition hover:border-(--accent) hover:bg-white/80 disabled:opacity-50"
 					onclick={preloadModel}
 					disabled={isLoadingModel}
 				>
@@ -385,7 +385,7 @@
 				{#if selectedFile && audioData}
 					<button
 						type="button"
-						class="ml-auto text-xs text-(--muted) underline decoration-dotted underline-offset-2 hover:text-(--accent)"
+						class="ml-auto cursor-pointer text-xs text-(--muted) underline decoration-dotted underline-offset-2 hover:text-(--accent)"
 						onclick={resetAppState}
 					>
 						clear
@@ -439,7 +439,7 @@
 			{:else}
 				<button
 					type="button"
-					class={`w-full rounded-xl border-2 border-dashed px-4 py-8 text-center transition ${
+					class={`w-full cursor-pointer rounded-xl border-2 border-dashed px-4 py-8 text-center transition ${
 						isDragActive
 							? 'border-(--accent) bg-(--accent-soft)'
 							: 'border-(--border) bg-white/50 hover:border-(--accent) hover:bg-white/70'
@@ -456,9 +456,7 @@
 						>
 							{isDragActive ? 'drop it right here!' : 'drop audio here…'}
 						</p>
-						<p class="mt-1 text-xs text-(--muted)">
-							mp3, wav, m4a, ogg, flac, or webm
-						</p>
+						<p class="mt-1 text-xs text-(--muted)">mp3, wav, m4a, ogg, flac, or webm</p>
 					{/if}
 				</button>
 			{/if}
@@ -477,7 +475,7 @@
 				{#each languages as language (language.code)}
 					<button
 						type="button"
-						class={`rounded-full px-3 py-1.5 text-sm transition ${
+						class={`cursor-pointer rounded-full px-3 py-1.5 text-sm transition ${
 							selectedLanguage === language.code
 								? 'bg-(--accent) text-white'
 								: 'bg-white/60 text-(--ink-soft) hover:bg-white/90'
@@ -494,7 +492,7 @@
 		<section class="mb-10">
 			<button
 				type="button"
-				class="w-full rounded-xl bg-(--accent) px-5 py-3.5 text-base font-semibold text-white transition hover:bg-(--accent-hover) disabled:cursor-not-allowed disabled:opacity-40"
+				class="w-full cursor-pointer rounded-xl bg-(--accent) px-5 py-3.5 text-base font-semibold text-white transition hover:bg-(--accent-hover) disabled:cursor-not-allowed disabled:opacity-40"
 				onclick={startTranscription}
 				disabled={!hasFile || !webgpuSupported || isBusy}
 			>
@@ -543,14 +541,14 @@
 						<div class="flex gap-2">
 							<button
 								type="button"
-								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
+								class="cursor-pointer rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
 								onclick={copyTranscript}
 							>
 								{copied ? '✓ copied' : 'copy'}
 							</button>
 							<button
 								type="button"
-								class="rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
+								class="cursor-pointer rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium text-(--ink-soft) transition hover:bg-white"
 								onclick={downloadTranscript}
 							>
 								download .txt
