@@ -340,6 +340,7 @@
 				Whimscribe
 			</h1>
 			<p class="mt-2 text-sm text-(--muted)">private audio transcription in your browser</p>
+			<p class="text-sm text-(--muted)">your audio/video file never leaves your computer</p>
 		</header>
 
 		<!-- Collapsed summary bar -->
@@ -446,7 +447,7 @@
 							</div>
 						</div>
 					{:else}
-						<span>Click to load model</span>
+						<span>Click to load the transcription model</span>
 						<span class="ml-1 text-(--muted)">· first time downloads ~2GB</span>
 					{/if}
 				</button>
