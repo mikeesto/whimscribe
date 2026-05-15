@@ -11,6 +11,7 @@
 		DEFAULT_SAMPLE_RATE
 	} from '$lib/transcriber';
 	import Cat from '$lib/Cat.svelte';
+	import { resolve } from '$app/paths';
 
 	type RunSummary = {
 		elapsedSeconds: number;
@@ -340,7 +341,12 @@
 				Whimscribe
 			</h1>
 			<p class="mt-2 text-sm text-(--muted)">private audio transcription in your browser</p>
-			<p class="text-sm text-(--muted)">your audio/video file never leaves your computer</p>
+			<a
+				href={resolve('/faq')}
+				class="text-sm text-(--muted) hover:text-(--ink) hover:underline hover:decoration-dotted hover:underline-offset-2"
+			>
+				your audio/video file never leaves your computer
+			</a>
 		</header>
 
 		<!-- Collapsed summary bar -->
@@ -690,6 +696,9 @@
 	/>
 
 	<footer class="mx-auto mt-16 mb-4 max-w-2xl text-center text-xs text-(--muted)">
+		<p class="mb-4">
+			<a href={resolve('/faq')} class="underline underline-offset-2 hover:text-(--ink)">FAQ</a>
+		</p>
 		<p>
 			by <a
 				href="https://mikeesto.com"
