@@ -74,7 +74,9 @@
 	onMount(() => {
 		if (!browser) return;
 		webgpuSupported = typeof navigator !== 'undefined' && 'gpu' in navigator;
-		isMobile = (navigator as any).userAgentData?.mobile ?? window.innerWidth < 768;
+		isMobile =
+			(navigator as Navigator & { userAgentData?: { mobile?: boolean } }).userAgentData?.mobile ??
+			window.innerWidth < 768;
 		webgpuChecked = true;
 	});
 
