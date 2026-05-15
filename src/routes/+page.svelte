@@ -347,7 +347,7 @@
 				href={resolve('/faq')}
 				class="text-sm text-(--muted) hover:text-(--ink) hover:underline hover:decoration-dotted hover:underline-offset-2"
 			>
-				your audio/video file never leaves your computer
+				your file never leaves your computer
 			</a>
 		</header>
 
